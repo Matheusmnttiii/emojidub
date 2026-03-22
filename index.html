@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EmojiDub — Sua voz, seu emoji</title>
+  <meta name="description" content="Duble emojis com sua própria voz. Cada emoji ganha uma identidade sonora única criada por você." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="scanline" aria-hidden="true"></div>
+
+  <div class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="logo" aria-label="EmojiDub logo">🎭</div>
+      <div class="logo-text">
+        <h1>EmojiDub</h1>
+        <p>Sua voz · Sua dublagem · Seu emoji</p>
+      </div>
+      <div class="badge" aria-label="Versão">🎙 My Voice Zoo — Emoji Edition</div>
+    </header>
+
+    <!-- EMOJI PICKER -->
+    <section class="section" aria-labelledby="picker-label">
+      <div class="section-label" id="picker-label">escolha o emoji para dublar</div>
+      <div class="emoji-scroll" id="emojiGrid" role="list" aria-label="Grade de emojis"></div>
+    </section>
+
+    <!-- STUDIO -->
+    <section class="studio" id="studio" aria-labelledby="studio-label">
+      <div class="section-label" id="studio-label" style="margin-bottom:1.5rem">estúdio de dublagem</div>
+
+      <div class="studio-empty" id="studioEmpty">
+        <span aria-hidden="true">🎬</span>
+        selecione um emoji acima para começar a dublar
+      </div>
+
+      <div id="studioContent" style="display:none">
+
+        <div class="studio-header">
+          <div class="studio-emoji" id="stEmoji" aria-hidden="true"></div>
+          <div class="studio-info">
+            <h2 id="stName"></h2>
+            <p id="stDesc"></p>
+            <div class="studio-tags" id="stTags"></div>
+          </div>
+        </div>
+
+        <!-- DICA -->
+        <div class="tip-box" id="tipBox">
+          <div class="tip-label">💡 DICA DE DUBLAGEM</div>
+          <div id="stHint"></div>
+        </div>
+
+        <!-- ZONA DE GRAVAÇÃO -->
+        <div class="record-zone" id="recZone" aria-live="polite">
+          <div class="rec-timer" id="recTimer" aria-label="Tempo de gravação">00:00</div>
+          <canvas class="waveform-canvas" id="waveCanvas" aria-hidden="true"></canvas>
+          <div class="rec-hint" id="recHint">
+            <strong>Grave sua dublagem!</strong><br>
+            Clique em gravar e faça o som do emoji com sua voz
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-rec" id="btnRec" onclick="Studio.toggleRecord()">⏺ Gravar</button>
+            <button class="btn btn-play" id="btnPreview" onclick="Studio.preview()" disabled>▶ Ouvir</button>
+            <button class="btn btn-save" id="btnSave" onclick="Studio.save()" disabled>💾 Salvar</button>
+            <button class="btn btn-clear" id="btnClear" onclick="Studio.clear()" style="display:none">✕ Descartar</button>
+          </div>
+        </div>
+
+        <!-- EFEITOS -->
+        <div class="modifiers" id="modifiers">
+          <div class="mod">
+            <div class="mod-label">
+              <span>Pitch</span>
+              <span class="mod-val" id="pitchVal">1.0×</span>
+            </div>
+            <input type="range" id="pitchSlider" min="0.3" max="3.0" step="0.1" value="1.0"
+              aria-label="Ajuste de pitch"
+              oninput="UI.updateMod('pitchVal', this.value, '×')" />
+          </div>
+          <div class="mod">
+            <div class="mod-label">
+              <span>Velocidade</span>
+              <span class="mod-val" id="rateVal">1.0×</span>
+            </div>
+            <input type="range" id="rateSlider" min="0.4" max="2.5" step="0.1" value="1.0"
+              aria-label="Velocidade de reprodução"
+              oninput="UI.updateMod('rateVal', this.value, '×')" />
+          </div>
+          <div class="mod">
+            <div class="mod-label">
+              <span>Volume</span>
+              <span class="mod-val" id="volVal">80%</span>
+            </div>
+            <input type="range" id="volSlider" min="0" max="100" value="80"
+              aria-label="Volume de reprodução"
+              oninput="UI.updateMod('volVal', this.value, '%')" />
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- BIBLIOTECA -->
+    <section class="library" aria-labelledby="lib-label">
+      <div class="section-label" id="lib-label">🗂 biblioteca de dublagens salvas</div>
+      <div class="lib-grid" id="libGrid" role="list" aria-label="Dublagens salvas"></div>
+    </section>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar" role="status" aria-live="polite">
+      <div class="dot"></div>
+      <span id="statusTxt">pronto para gravar · selecione um emoji</span>
+      <span class="status-right" id="statusRight">EmojiDub Studio v1.0</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">🎭</span>
+          <div>
+            <div class="footer-name">EmojiDub</div>
+            <div class="footer-tagline">Sonic Identity Platform</div>
+          </div>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-credits">
+          <div class="footer-dev">
+            <span class="footer-label">Desenvolvido por</span>
+            <span class="footer-author">Matheus</span>
+          </div>
+          <div class="footer-meta">
+            <span class="footer-version">v1.0.0</span>
+            <span class="footer-dot">·</span>
+            <span class="footer-year">2025</span>
+            <span class="footer-dot">·</span>
+            <span class="footer-license">MIT License</span>
+          </div>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-tech">
+          <span class="footer-label">Tecnologias</span>
+          <div class="footer-badges">
+            <span class="fbadge">Web Audio API</span>
+            <span class="fbadge">MediaRecorder</span>
+            <span class="fbadge">getUserMedia</span>
+            <span class="fbadge">HTML5</span>
+            <span class="fbadge">Vanilla JS</span>
+          </div>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-rights">
+          <p>© 2025 Matheus · Todos os direitos reservados</p>
+          <p>Feito com 🎙 e muita criatividade</p>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- /.app -->
+
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/studio.js"></script>
+  <script src="js/library.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
